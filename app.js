@@ -7,17 +7,19 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
-
 //1) MIDDLEWARE
-app.use(morgan('dev'));
-
+console.log(process.env.NODE_ENV);
+if(process.env.NODE_ENV === 'development'){//same process as in serve.js
+    app.use(morgan('dev'));
+}
 app.use(express.json());//middleware -> in the middle of the req and the res
+app.use(express.static(`${__dirname}/public`));//looking for static files - if we dont find any routes that match the app will go to /public and look for static files
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
     //next is middleware express function
     console.log('new middleware ');
     next();
-});
+});*/
 
 app.use((req, res,next)=> {//middleware
     req.requestTime = new Date().toISOString();//the time the request was made
