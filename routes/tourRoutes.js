@@ -7,8 +7,7 @@ const router = express.Router();//middleware function
 router
 .route('/')
 .get(tourController.getAllTours)
-.post(tourController.checkBody, tourController.createTour);
-//chaining middleware
+.post(tourController.createTour);
 
 router
 .route('/:id')

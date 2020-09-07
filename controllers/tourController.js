@@ -2,63 +2,92 @@ const Tour = require('./../models/tourModel');
 
 //const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
-exports.checkBody = (req, res, next) => {
-    if(!req.body.name || !req.body.price){
-     return res.status(404).json({
-            status:'error',
-            message: `There was an error`})
-    } 
-    next();
-}
-
-exports.getAllTours = (req, res) => {
-    console.log(req.requestTime);
-    res.status(200).json({
-        status: 'success',
-        requestTime: req.requestTime,
-       /*  results: tours.length,
-        data: {
-            tours
-        } */
-    });
+exports.getAllTours = async (req, res) => {
+    try {
+        const tours = await Tour.find();//show the collection
+        res.status(200).json({
+            status: 'success',
+            results: tours.length,
+            data: {
+                tours
+            }
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail to show collection',
+            message: err
+        })
+    }
 };
 
-exports.getTour = (req, res) => { //parameter => :id || optinal parameter => :id?
-    console.log(req.params);//req.params assign the value to the parameter => :id
-
-    const id = req.params.id * 1; //convert from string to int
-    /* const tour = tours.find(el => el.id === id);
-
-    res.status(200).json({
-    status: 'success',
-    data: {
-        tour
-    } 
-    }); */
+exports.getTour = async (req, res) => { //parameter => :id || optinal parameter => :id?
+    try {
+        const tour = await Tour.findById(req.params.id);
+        //Tour.findOne({_id req.params.id})
+        res.status(200).json({
+            status: 'success',
+            data: {
+                tour
+            }
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail to show the tour',
+            message: err
+        })
+    }
 };
 
-exports.createTour = (req, res) =>{ //post => send data from the client/req to the server || add new tour
-    res.status(201).json({ //HTTP status 201 gor create
-        status: 'success',
-        /* data: {
-            tour: newTour
-        } */
-    });
+exports.createTour = async (req, res) => {
+    try {
+        /* const newTour = new Tour()
+        newTour.save() */
+        const newTour = await Tour.create(req.body);//the new document with all the Tour object fileds
+        res.status(201).json({ //HTTP status 201 for create
+            status: 'success',
+            data: {
+                tour: newTour
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail to create new tour',
+            message: "Invalid data sent!"
+        })
+    }
 };
 
-exports.updateTour = (req, res) => { //update the data
-    res.status(200).json({
-        status: 'success', 
-        data: {
-            tour: `<Updated toure here...>`
-        }
-    });
+exports.updateTour = async (req, res) => { //update the data
+    try {
+        const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+            new: true //return the modified document
+        });
+        res.status(200).json({
+            status: 'success',
+            data: {
+                tour
+            }
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'fail to update the tour',
+            message: err
+        })
+    }
 };
 
-exports.deleteTour = (req, res) => { //delete the data
-    
-    res.status(204).json({ //204 => no content
-        status: 'success', 
-        data: null //sending null back 
-    });
+exports.deleteTour = async (req, res) => { //delete the data
+    try {
+        await Tour.findByIdAndRemove(req.params.id);
+        res.status(204).json({ //204 => no content
+            status: 'success',
+            data: null //sending null back 
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'no such id to delete',
+            message: err
+        })
+    }
+
 };
