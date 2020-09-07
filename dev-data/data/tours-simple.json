@@ -205,20 +205,5 @@
             "2022-01-16,10:00",
             "2022-12-12,10:00"
         ]
-    },
-    {
-        "id": 9,
-        "name": "Forrest-Hills-Tour",
-        "duration": 10
-    },
-    {
-        "id": 10,
-        "name": "Dumbo-Brooklyn",
-        "duration": 11
-    },
-    {
-        "id": 11,
-        "name": "Nyc-Time-Square",
-        "duration": 4
     }
 ]
