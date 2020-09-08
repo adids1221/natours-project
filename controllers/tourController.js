@@ -2,17 +2,26 @@ const Tour = require('./../models/tourModel');
 
 //const tours = JSON.parse(fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`));
 
+exports.aliasTopTours = (req, res, next) => {
+    console.log(`inside alias`);
+    //prefilling the query
+    req.query.limit = 5;
+    req.query.sort ='-ratingsAverage,price';
+    req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+    next();
+}
+
 exports.getAllTours = async (req, res) => {
     try {
         //Build the query
         //-Filtering
-        const queryObj = { ...req.query } //creat new object => destructuring
-        const excludeFields = ['page', 'sort', 'limit', 'fields']
+        const queryObj = { ...req.query }; //creat new object => destructuring
+        const excludeFields = ['page', 'sort', 'limit', 'fields'];
         excludeFields.forEach(el => delete queryObj[el]);//delete the exclude fields from the query 
 
         //-Advance Filtering
         let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, match => `$${match}`)
+        queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, match => `$${match}`);
 
         let query = Tour.find(JSON.parse(queryStr));
 
@@ -66,7 +75,7 @@ exports.getAllTours = async (req, res) => {
         res.status(404).json({
             status: 'fail to show collection',
             message: err
-        })
+        });
     }
 };
 
@@ -84,7 +93,7 @@ exports.getTour = async (req, res) => { //parameter => :id || optinal parameter 
         res.status(404).json({
             status: 'fail to show the tour',
             message: err
-        })
+        });
     }
 };
 
@@ -103,7 +112,7 @@ exports.createTour = async (req, res) => {
         res.status(400).json({
             status: 'fail to create new tour',
             message: "Invalid data sent!"
-        })
+        });
     }
 };
 
@@ -122,7 +131,7 @@ exports.updateTour = async (req, res) => { //update the data
         res.status(404).json({
             status: 'fail to update the tour',
             message: err
-        })
+        });
     }
 };
 
@@ -137,7 +146,7 @@ exports.deleteTour = async (req, res) => { //delete the data
         res.status(404).json({
             status: 'no such id to delete',
             message: err
-        })
+        });
     }
 
 };
