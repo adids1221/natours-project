@@ -14,17 +14,32 @@ exports.getAllTours = async (req, res) => {
         let queryStr = JSON.stringify(queryObj);
         queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, match => `$${match}`)
 
-        const query = await Tour.find(JSON.parse(queryStr));
-        console.log(req.query);
+        let query = Tour.find(JSON.parse(queryStr));
         
+        //-Sorting
+        if(req.query.sort) {
+            const sortBy = req.query.sort.split(',').join(' ');//replace all the , by space
+            query = query.sort(sortBy);
+        } else {
+            query = query.sort('-createdAt');
+        }
+ 
+        //Filed limiting
+        if(req.query.fields) {
+            const fields = req.query.fields.split(',').join(' ');
+            query = query.select(fields);
+        } else {
+            query = query.select('-__v');//exclude __V
+        }
+
         /* const tours = await Tour.find()
         .where('duration').equals(5)
         .where('difficulty').equals('easy') */
 
-        //execute the query
+        //Execute the query
         const tours = await query;
 
-        //send response 
+        //Send response 
         res.status(200).json({
             status: 'success',
             results: tours.length,
@@ -33,6 +48,7 @@ exports.getAllTours = async (req, res) => {
             }
         });
     } catch (err) {
+        console.log(err)
         res.status(404).json({
             status: 'fail to show collection',
             message: err
