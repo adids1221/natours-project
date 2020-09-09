@@ -195,7 +195,6 @@ exports.getMonthlyPlan = async (req, res) => {
             }
         });
     } catch (err) {
-        console.log(err);
         res.status(404).json({
             status: 'fail to process',
             message: err
