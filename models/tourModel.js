@@ -9,7 +9,7 @@ const tourSchema = new mongoose.Schema({
         trim: true
     },
     slug: {
-       type: String 
+        type: String
     },
     duration: {
         type: Number,
@@ -55,12 +55,17 @@ const tourSchema = new mongoose.Schema({
         default: Date.now(),
         select: false
     },
-    startDates: [Date] //array of dates
-}, {
-    //passing options, getting the virual properties to the document/object
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
-});
+    startDates: [Date], //array of dates
+    secretTour: {
+        type: Boolean,
+        default: false
+    }
+},
+    {
+        //passing options, getting the virual properties to the document/object
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    });
 
 //Define virtual properties
 tourSchema.virtual('durationWeeks').get(function () {
@@ -68,7 +73,8 @@ tourSchema.virtual('durationWeeks').get(function () {
     return this.duration / 7;
 });
 
-//mongoose middleware - Document middleware
+//Mongoose middleware 
+//-Document middleware 
 tourSchema.pre('save', function (next) {
     //this function will be called before document saved to the DB
     //runs before .save() and .create() || .insertMany() will not trigger the function
@@ -87,6 +93,21 @@ tourSchema.post('save', function (doc, next) {
     console.log(doc);
     next();
 }); */
+
+//-Query middleware
+tourSchema.pre(/^find/, function (next) {
+    //using regexp for all the find methods
+    this.find({ secretTour: { $ne: true } });
+    this.start = Date.now();
+    next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+    console.log(`Query took: ${Date.now() - this.start} ms`);
+    console.log(docs);
+    next();
+});
+
 
 const Tour = mongoose.model('Tour', tourSchema);
 
