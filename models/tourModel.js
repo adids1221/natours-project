@@ -6,7 +6,9 @@ const tourSchema = new mongoose.Schema({
         type: String,
         required: [true, 'A tour must have a name'], //validator
         unique: true,
-        trim: true
+        trim: true,
+        maxlength: [40, 'A tour name must have less or equal then 40 characters'],
+        minlength: [10, 'A tour name must have at least 10 character']
     },
     slug: {
         type: String
@@ -21,11 +23,17 @@ const tourSchema = new mongoose.Schema({
     },
     difficulty: {
         type: String,
-        required: [true, 'A tour must have a difficuulty level']
+        required: [true, 'A tour must have a difficuulty level'],
+        enum: {
+            values: ['easy', 'medium', 'difficult'],
+            message: 'Difficulty is either "easy", "medium" or "difficult"'
+        }
     },
     ratingsAverage: {
         type: Number,
-        default: 4.5
+        default: 4.5,
+        min: [1, 'Rating must be above 1'],
+        max: [5, 'Rating must be below 5']
     },
     ratingsQuantaity: {
         type: Number,
@@ -97,7 +105,7 @@ tourSchema.post('save', function (doc, next) {
 //-Query middleware
 tourSchema.pre(/^find/, function (next) {
     //using regexp for all the find methods
-    this.find({ secretTour: { $ne: true } });
+    //this.find({ secretTour: { $ne: true } });
     this.start = Date.now();
     next();
 });
