@@ -131,9 +131,6 @@ exports.getTourStats = async (req, res) => {
             {
                 $sort: { avgPrice: 1 }//ascending 
             }
-            /* {
-                $match: { _id: { $ne: 'EASY' } }
-            } */
         ]);
         res.status(200).json({
             status: 'success',
@@ -144,7 +141,7 @@ exports.getTourStats = async (req, res) => {
 
     } catch (err) {
         res.status(404).json({
-            status: 'no such id to delete',
+            status: 'Aggregation failure!',
             message: err
         });
     }
