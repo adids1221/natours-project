@@ -10,7 +10,7 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 //1) MIDDLEWARE
-console.log(process.env.NODE_ENV);
+//console.log(process.env.NODE_ENV);
 if(process.env.NODE_ENV === 'development'){//same process as in serve.js
     app.use(morgan('dev'));
 }
