@@ -5,7 +5,7 @@ const handleCastErrorDB = err => {
     return new AppError(message, 400);
   };
 
-  const sendErrorDev = (err, res) => {
+const sendErrorDev = (err, res) => {
     res.status(err.statusCode).json({
       status: err.status,
       error: err,
@@ -38,10 +38,13 @@ const sendErrorProd = (err, res) => {
 module.exports = (err, req ,res ,next) => {
     err.statusCode = err.statusCode || 500; //Internal Server Error
     err.status = err.status  || 'error';
+    console.log(err.constructor.name);
     if(process.env.NODE_ENV === 'development'){
         sendErrorDev(err, res);
     } else if (process.env.NODE_ENV === 'production'){
-        let error = {...err};
+        //let error = { ...err };
+        //error.name = err.name;  
+        let error = Object.assign(err);
         if(error.name === 'CastError') error = handleCastErrorDB(error);
         sendErrorProd(error,res);
     }
