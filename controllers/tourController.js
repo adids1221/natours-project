@@ -45,7 +45,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => { //parameter => :id || optinal parameter => :id?
         const tour = await Tour.findById(req.params.id, (err) => {
             if(err) {
-                return next(new AppError(`Not a valid ID: ${req.params.id}`, 404));
+               // return next(new AppError(`Not a valid ID: ${req.params.id}`, 404));
+               return next(err)
             }
         });
         //Tour.findOne({_id req.params.id})
@@ -68,7 +69,7 @@ exports.updateTour = catchAsync(async (req, res, next) => { //update the data
             runValidators: true
         },(err) => {
             if(err) {
-                return next(new AppError(`Not a valid ID: ${req.params.id}`, 404));
+                return next(err);
             }
         });
 

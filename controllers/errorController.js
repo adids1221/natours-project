@@ -11,6 +11,12 @@ const handleDuplicatedFieldsDB = err => {
   return new AppError(message, 400);
 }
 
+const handleValidatorErrorDB = err => {
+  const errors = Object.values(err.errors).map(el => el.message);
+  const message = `Invalid input data. ${errors.join(' || ')}`;
+  return new AppError(message, 400);
+}
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -23,6 +29,7 @@ const sendErrorDev = (err, res) => {
 const sendErrorProd = (err, res) => {
   // Operational, trusted error: send message to client
   if (err.isOperational) {
+    console.log(`iam here`)
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message
@@ -44,16 +51,15 @@ const sendErrorProd = (err, res) => {
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500; //Internal Server Error
   err.status = err.status || 'error';
-  console.log(err.code)
+  console.log(err)
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV === 'production') {
-    //let error = { ...err };
-    //error.name = err.name;  
-    let error = Object.assign(err);
-    console.log(err.name);
-    if (error.name === 'CastError') error = handleCastErrorDB(error);
-    if (error.code === 11000) error = handleDuplicatedFieldsDB(error);
+  } else if (process.env.NODE_ENV === 'production') {  
+    //let error = Object.assign(err);
+    let error;
+    if (err.name === 'CastError') error = handleCastErrorDB(err);
+    else if (err.code === 11000) error = handleDuplicatedFieldsDB(err);
+    if(err.name === 'ValidationError') error = handleValidatorErrorDB(err);
     sendErrorProd(error, res);
   }
 }
