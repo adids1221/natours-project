@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -36,7 +37,9 @@ const userSchema = new mongoose.Schema({
             }, message: 'Passwords are not the same'
         }
     },
-    passwordChangedAt: Date
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date
 });
 
 //pre('save') => between getting the data for the model and passing it to the db
@@ -62,7 +65,7 @@ userSchema.methods.correctPassword = async function (candidatePassword, userPass
 
 userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
     if (this.passwordChangedAt) {
-        //if the password cahnged for this user is
+        //if the password changed for this user is
         const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
         console.log(changedTimeStamp, JWTTimeStamp);
         //The time that the token was issued is less then changed time stamp
@@ -71,6 +74,23 @@ userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
 
     //by default the user didnt changed is password
     return false;
+}
+
+userSchema.methods.createPasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    //sending an encrypted reset token to the DB
+    this.passwordResetToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    console.log({ resetToken }, this.passwordResetToken);
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+ 
+    //sending the uncrypted reset token to the user email
+    return resetToken;
 }
 
 const User = mongoose.model('User', userSchema);
