@@ -19,7 +19,7 @@ app.use(express.static(`${__dirname}/public`));//looking for static files - if w
 
 app.use((req, res,next)=> {//middleware
     req.requestTime = new Date().toISOString();//the time the request was made
-    //console.log(x);
+    console.log(req.headers);
     next();
 });
 
