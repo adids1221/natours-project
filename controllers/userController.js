@@ -47,6 +47,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    //dont delete the user but set his active to false and dont show it among the other users
+    await User.findByIdAndUpdate(req.user.id, { active: false });
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});
+
 //admin can update users data
 exports.updateUser = (req, res) => {
     res.status(500).json({

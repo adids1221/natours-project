@@ -39,7 +39,12 @@ const userSchema = new mongoose.Schema({
     },
     passwordChangedAt: Date,
     passwordResetToken: String,
-    passwordResetExpires: Date
+    passwordResetExpires: Date,
+    active: {
+        type: Boolean,
+        default: true,
+        select: false
+    }
 });
 
 //pre('save') => between getting the data for the model and passing it to the db
@@ -63,6 +68,12 @@ userSchema.pre('save', function (next) {
     }
     //sub 1 sec from the passwordChangedAt time stamp to compare to the JWT timestamp
     this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
+userSchema.pre(/^find/, function (next) {
+    //using regex for all find methods
+    this.find({ active: { $ne: false } });
     next();
 });
 
