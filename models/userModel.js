@@ -3,6 +3,10 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
+//TODO: implement two-factor authentication
+//TODO: require re-authentication before high value action
+//TODO: confirm user email after sign-up using Mailstrap
+
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
