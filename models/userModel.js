@@ -57,6 +57,15 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
+userSchema.pre('save', function (next) {
+    if (!this.isModified('password') || this.isNew) {
+        return next();
+    }
+    //sub 1 sec from the passwordChangedAt time stamp to compare to the JWT timestamp
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+});
+
 //instance method
 //using bcrypt for compare password from the client and from the DB
 userSchema.methods.correctPassword = async function (candidatePassword, userPassword) {
@@ -88,7 +97,7 @@ userSchema.methods.createPasswordResetToken = function () {
     console.log({ resetToken }, this.passwordResetToken);
 
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
- 
+
     //sending the uncrypted reset token to the user email
     return resetToken;
 }
