@@ -12,7 +12,7 @@ const signToken = id => {
     });
 }
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, res) => {
     const token = signToken(user._id);
 
     const cookieOptions = {
@@ -29,13 +29,7 @@ const createSendToken = (user, statusCode, res) => {
     //remove the password from the output
     user.password = undefined;
 
-    res.status(statusCode).json({
-        status: 'success',
-        token,
-        data: {
-            user
-        }
-    });
+    return token;
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
@@ -48,20 +42,63 @@ exports.signup = catchAsync(async (req, res, next) => {
         passwordChangedAt: req.body.passwordChangedAt
     });
 
-    createSendToken(newUser, 201, res);
-    //newuser._id is the payload, JWT_SECRET is the secret
+    const createdToken = createSendToken(newUser, res);
+    //console.log(createdToken);
+
+    //email confirmation
+    const confirmURL = `${req.protocol}://${req.get('host')}/api/v1/users/confirm/${createdToken}`;
+
+    const message = `Hey ${newUser.name},\n Welcome to Natours, please confirm your email address for using our services.\n 
+    Confirm: ${confirmURL}`;
+
+    try {
+        await sendEmail({
+            email: newUser.email,
+            subject: 'Welcome to Natours - Confirm your email to get started.',
+            message
+        });
+
+        res.status(201).json({
+            status: 'success',
+            createdToken,
+            data: {
+                newUser
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+        return next(new AppError('There was an error sending this email. Try agian later!', 500));
+        //return next(err);
+    }
+
 });
 
+exports.confirm = catchAsync(async (req, res, next) => {
+    const decoded = await promisify(jwt.verify)(req.params.token, process.env.JWT_SECRET);
+    await User.findByIdAndUpdate(decoded.id, { confirmed: true });
+    res.status(204).json({
+        status: 'success',
+        message: `Thank you for confirmation, Welcome to Natours`
+    });
+});
+
+
 exports.login = catchAsync(async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email, password, confirmed } = req.body;
 
     //check if email and password are exists
     if (!email || !password) {
-        return next(new AppError('Please provide a valid email and password!', 400))
+        return next(new AppError('Please provide a valid email and password!', 400));
     }
 
     //check if the user exists and the password is correct
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password +confirmed');
+
+    if (!user.confirmed) {
+        return next(new AppError('User havent been confirmed yet! \n Please confirm your email to login', 400));
+    }
+
     //--compare the password from the client (req.body) and the password from the DB
     //--if the user is not exists or the password dosent match    
     if (!user || !await user.correctPassword(password, user.password)) {
@@ -69,7 +106,15 @@ exports.login = catchAsync(async (req, res, next) => {
     }
 
     //send toekn to the client
-    createSendToken(user, 200, res);
+    const createdToken = createSendToken(user, res);
+
+    res.status(200).json({
+        status: 'success',
+        createdToken,
+        data: {
+            user
+        }
+    });
 });
 
 //protect route from users that are not login
@@ -181,7 +226,14 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
     //update and change the password, passwordChangedAt time stamp -- using middleware in userModel
     //log the user in, send JWT
-    createSendToken(user, 200, res);
+    const createdToken = createSendToken(user, res);
+    res.status(200).json({
+        status: 'success',
+        createdToken,
+        data: {
+            user
+        }
+    });
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -203,5 +255,12 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     //log user in, send JWT
-    createSendToken(user, 200, res);
+    createSendToken(user, res);
+    res.status(200).json({
+        status: 'success',
+        createdToken,
+        data: {
+            user
+        }
+    });
 });

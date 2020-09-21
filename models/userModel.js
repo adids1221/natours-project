@@ -48,6 +48,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
         select: false
+    },
+    confirmed: {
+        type: Boolean,
+        default: false,
+        select: false
     }
 });
 

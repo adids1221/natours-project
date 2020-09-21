@@ -43,7 +43,16 @@ app.use(mongoSanitize());
 app.use(xss());
 
 //Prevent parameter pollution
-app.use(hpp());
+app.use(hpp({
+    whitelist: [
+        'duration',
+        'ratingsAverage',
+        'ratingsQuantaity',
+        'maxGroupSize',
+        'difficulty',
+        'price'
+    ]
+}));
 
 //Serving static files
 app.use(express.static(`${__dirname}/public`));//looking for static files - if we dont find any routes that match the app will go to /public and look for static files

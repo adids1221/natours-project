@@ -25,6 +25,9 @@ router
     .delete('/deleteMe', authController.protect, userController.deleteMe);
 
 router
+    .get('/confirm/:token', authController.confirm);
+
+router
     .route('/')
     .get(userController.getAllUsers)
     .post(userController.createUser);
