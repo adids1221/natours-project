@@ -12,6 +12,9 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
+
+//TODO: fix AppError error -> Unhandeld route for /api/v1/reviews at the app.js
 
 const app = express();
 
@@ -67,6 +70,7 @@ app.use((req, res, next) => {//middleware
 //3) ROUTES - mount our routers
 app.use('/api/v1/tours', tourRouter);//using the middleware
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 //Unhandeld routes
 app.all('*', (req, res, next) => {
