@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema({
     name: {
@@ -77,7 +78,38 @@ const tourSchema = new mongoose.Schema({
     secretTour: {
         type: Boolean,
         default: false
-    }
+    },
+    startLocation: {
+        //GeoJSON - Embedded object
+        type: {
+            type: String,
+            default: 'Point',
+            enum: ['Point']
+        },
+        coordinates: [Number], //expect an arr of numbers
+        address: String,
+        description: String
+    },
+    locations: [ //arr of GeoJSON objects - Embedded document inside the parent document
+        {
+            type: {
+                type: String,
+                default: 'Point',
+                enum: ['Point']
+            },
+            coordinates: [Number],
+            address: String,
+            description: String,
+            day: Number
+        }
+    ],
+    //guides: Array --- array of user id's || embedding
+    guides: [ //Reference to the user data model without saving the guides in the tour data model
+        {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User'
+        }
+    ]
 },
     {
         //passing options, getting the virual properties to the document/object
@@ -100,15 +132,10 @@ tourSchema.pre('save', function (next) {
     next();
 });
 
-/* tourSchema.pre('save', function (next) {
-    console.log('Will save document');
-    next();
-});
-
-//Post middleware
-tourSchema.post('save', function (doc, next) {
-    //this middleware execute after all the pre middleware functions are completed
-    console.log(doc);
+//Embedded users data model into tours data model
+/* tourSchema.pre('save', async function (next) {
+    const guidesPromise = this.guides.map(async id => await User.findById(id)); //creating arr of promises
+    this.guides = await Promise.all(guidesPromise); //overwriting the arr of user id's with arr of user documentes
     next();
 }); */
 
@@ -117,6 +144,15 @@ tourSchema.pre(/^find/, function (next) {
     //using regexp for all the find methods
     //this.find({ secretTour: { $ne: true } });
     this.start = Date.now();
+    next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+    //using for populate all the query -> using reference
+    this.populate({
+        path: 'guides',
+        select: '-__v'
+    });
     next();
 });
 

@@ -43,13 +43,8 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => { //parameter => :id || optinal parameter => :id?
-    const tour = await Tour.findById(req.params.id, (err) => {
-        if (err) {
-            // return next(new AppError(`Not a valid ID: ${req.params.id}`, 404));
-            return next(err)
-        }
-    });
-    //Tour.findOne({_id req.params.id})
+    //populate reference to the guides in the user data model
+    const tour = await Tour.findById(req.params.id);
 
     if (!tour) {
         return next(new AppError('No tour found with that id', 404));
