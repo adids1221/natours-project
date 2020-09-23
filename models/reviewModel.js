@@ -35,9 +35,23 @@ const reviewSchema = new mongoose.Schema({
         //passing options, getting the virual properties to the document/object
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
-        id: false
     }
 );
+
+
+//Query middleware
+reviewSchema.pre(/^find/, function (next) {
+    this.populate({
+        path: 'tour',
+        select: 'name'
+    })
+        .populate({
+            path: 'user',
+            select: 'name'
+        });
+
+    next();
+});
 
 const Review = mongoose.model('Review', reviewSchema);
 

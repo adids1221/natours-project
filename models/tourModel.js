@@ -104,7 +104,9 @@ const tourSchema = new mongoose.Schema({
         }
     ],
     //guides: Array --- array of user id's || embedding
-    guides: [ //Reference to the user data model without saving the guides in the tour data model
+    guides: [ 
+        //Reference to the user data model without saving the guides in the tour data model
+        //Child referencing
         {
             type: mongoose.Schema.ObjectId,
             ref: 'User'
@@ -122,6 +124,14 @@ const tourSchema = new mongoose.Schema({
 tourSchema.virtual('durationWeeks').get(function () {
     //using function declaration => using this keyword
     return this.duration / 7;
+});
+
+//Virtual populate
+tourSchema.virtual('reviews', {
+    ref: 'review',
+    foreignField: 'tour', //the tour field in the Review model
+    localField: '_id' //_id of the tour in the Tour model
+    //look for the _id of the tour in the tour field in review
 });
 
 //Mongoose middleware 

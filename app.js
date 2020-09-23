@@ -14,8 +14,6 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
-//TODO: fix AppError error -> Unhandeld route for /api/v1/reviews at the app.js
-
 const app = express();
 
 //1) GLOBAL MIDDLEWARE
