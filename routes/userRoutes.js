@@ -15,21 +15,30 @@ router
 router
     .patch('/resetPassword/:token', authController.resetPassword);
 
-router
-    .patch('/updateMyPassword', authController.protect, authController.updatePassword);
+//Authenticate Routes - protect all router after this middleware
+router.use(authController.protect);
 
 router
-    .patch('/updateMe', authController.protect, userController.updateMe);
+    .patch('/updateMyPassword', authController.updatePassword);
 
 router
-    .delete('/deleteMe', authController.protect, userController.deleteMe);
+    .patch('/updateMe', userController.updateMe);
+
+router
+    .delete('/deleteMe', userController.deleteMe);
+
+router
+    .get('/me', userController.getMe, userController.getUser);
 
 router
     .get('/confirm/:token', authController.confirm);
 
+//Restrict the next routes for admin
+router.use(authController.restrictTo('admin'));
+
 router
     .route('/')
-    .get(authController.protect, userController.getAllUsers)
+    .get(userController.getAllUsers)
     .post(userController.createUser);
 
 router

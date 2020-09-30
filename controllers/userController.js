@@ -3,6 +3,12 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Factory = require('./../controllers/handlerFactory');
 
+//admin can update users data || Do not update passwords with this func
+exports.updateUser = Factory.updateOne(User);
+exports.deleteUser = Factory.deleteOne(User);
+exports.getUser = Factory.getOne(User);
+exports.getAllUsers = Factory.getAll(User);
+
 const filterObj = (obj, ...allowedFields) => {
     //allowedFields is arr of the parameter sent from the function
     const newObj = {};
@@ -14,11 +20,11 @@ const filterObj = (obj, ...allowedFields) => {
     return newObj;
 };
 
-//admin can update users data || Do not update passwords with this func
-exports.updateUser = Factory.updateOne(User);
-exports.deleteUser = Factory.deleteOne(User);
-exports.getUser = Factory.getOne(User);
-exports.getAllUsers = Factory.getAll(User);
+exports.getMe = (req, res, next) => {
+    //using the current loged in user ID
+    req.params.id = req.user.id;
+    next();
+};
 
 //current user update his own data
 exports.updateMe = catchAsync(async (req, res, next) => {
