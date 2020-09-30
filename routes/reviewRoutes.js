@@ -1,7 +1,9 @@
 const express = require('express');
 const reviewController = require('./../controllers/reviewController');
 const authController = require('./../controllers/authController');
-const router = express.Router();//middleware function
+
+//mergeParams - Preserve the req.params values from the parent router (tourRoutes)
+const router = express.Router({mergeParams: true});//middleware function
 
 router
     .route('/')

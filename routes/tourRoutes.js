@@ -1,9 +1,11 @@
 const express = require('express');
 const tourController = require('./../controllers/tourController');
 const authController = require('./../controllers/authController');
+const reviewRouter = require('./../routes/reviewRoutes');
 const router = express.Router();//middleware function
 
-/* router.param('id', tourController.checkID); */
+//Mount the router to review reviewRouter for Nested routes
+router.use('/:tourId/reviews', reviewRouter);
 
 router
     .route('/monthly-plan/:year')
@@ -30,5 +32,5 @@ router
         authController.protect,
         authController.restrictTo('admin', 'lead-guide'),
         tourController.deleteTour);
-
+        
 module.exports = router;
