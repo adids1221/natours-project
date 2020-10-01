@@ -78,7 +78,7 @@ exports.getAll = Model =>
             .sort()
             .limitFields()
             .paginate();
-        const doc = await features.query;
+        const doc = await features.query.explain();
 
         //Send response 
         res.status(200).json({
@@ -89,10 +89,3 @@ exports.getAll = Model =>
             }
         });
     });
-
-
-
-exports.getAllTours = catchAsync(async (req, res, next) => {
-    //Execute the query
-
-});

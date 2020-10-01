@@ -118,6 +118,12 @@ const tourSchema = new mongoose.Schema({
     }
 );
 
+//Compound index multiple-field index
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+//Single-field index
+tourSchema.index({ slug: 1 });
+
+
 //Define virtual properties
 tourSchema.virtual('durationWeeks').get(function () {
     //using function declaration => using this keyword
