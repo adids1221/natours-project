@@ -35,6 +35,8 @@ const reviewSchema = new mongoose.Schema(
     }
 );
 
+//Prevent duplicate reviews from the same user to the same tour
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 //Query middleware
 reviewSchema.pre(/^find/, function (next) {
@@ -70,6 +72,7 @@ reviewSchema.statics.calcAverageRating = async function (tourId) {
     //console.log(stats);
 
     if (stats.length > 0) {
+        //Set avgRating to 1 number after the decimal point
         await Tour.findByIdAndUpdate(tourId, {
             ratingsQuantaity: stats[0].nRating,
             ratingsAverage: stats[0].avgRating

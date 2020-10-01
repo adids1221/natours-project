@@ -91,3 +91,29 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
         }
     });
 });
+
+//tours-within/233/center/31.914912,34.869772/unit/mi
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+    //Use destrcturing 
+    const { distance, latlng, unit } = req.params;
+    const [lat, lng] = latlng.split(',');
+    //Convert the radius to radians
+    const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+    if (!lat || !lng) {
+        next(AppError('Please provide your location in the format required lat/lng', 400));
+    }
+
+    const tours = await Tour.find({ startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } } });
+
+    //console.log(distance, lat, lng, unit);
+
+    res.status(200).json({
+        status: 'success',
+        results: tours.length,
+        data: {
+            data: tours
+        }
+    });
+});
