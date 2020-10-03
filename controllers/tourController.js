@@ -117,3 +117,42 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
         }
     });
 });
+
+exports.getDistances = catchAsync(async (req, res, next) => {
+    //Use destrcturing 
+    const { latlng, unit } = req.params;
+    const [lat, lng] = latlng.split(',');
+
+    if (!lat || !lng) {
+        next(AppError('Please provide your location in the format required lat/lng', 400));
+    }
+
+    const multiplayer = unit === 'mi' ? 0.000621371 : 0.001;
+
+    const distances = await Tour.aggregate([
+        {
+            //Geospatial aggregation pipeline must start with geoNear || using Geo index
+            $geoNear: {
+                near: {
+                    type: 'Point',
+                    coordinates: [lng * 1, lat * 1]
+                },
+                distanceField: 'distance',
+                distanceMultiplier: multiplayer
+            }
+        },
+        {
+            $project: {
+                distance: 1,
+                name: 1
+            }
+        }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            data: distances
+        }
+    });
+});
