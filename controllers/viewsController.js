@@ -4,12 +4,6 @@ const catchAsync = require('../utils/catchAsync');
 exports.getOverview = catchAsync(async (req, res) => {
     //Get all the tour data from our collection 
     const tours = await Tour.find();
-
-    //Build template
-
-
-    //Render the template using tour data
-
     res.status(200).render('overview', {
         title: 'All Tours',
         tours
@@ -24,6 +18,7 @@ exports.getTour = catchAsync(async (req, res) => {
 
     res.status(200).render('tour', {
         status: 'success',
+        title: tour.name,
         tour
     });
 });

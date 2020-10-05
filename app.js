@@ -7,6 +7,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const csp = require('express-csp');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -27,8 +28,60 @@ app.set('views', path.join(__dirname, 'views'));
 //looking for static files - if we dont find any routes that match the app will go to /public and look for static files
 app.use(express.static(path.join(__dirname, 'public')));
 
+csp.extend(app, {
+    policy: {
+        directives: {
+            'default-src': ['self'],
+            'style-src': ['self', 'unsafe-inline', 'https:'],
+            'font-src': ['self', 'https://fonts.gstatic.com'],
+            'script-src': [
+                'self',
+                'unsafe-inline',
+                'data',
+                'blob',
+                'https://js.stripe.com',
+                'https://api.mapbox.com',
+            ],
+            'worker-src': [
+                'self',
+                'unsafe-inline',
+                'data:',
+                'blob:',
+                'https://js.stripe.com',
+                'https://api.mapbox.com',
+            ],
+            'frame-src': [
+                'self',
+                'unsafe-inline',
+                'data:',
+                'blob:',
+                'https://js.stripe.com',
+                'https://api.mapbox.com',
+            ],
+            'img-src': [
+                'self',
+                'unsafe-inline',
+                'data:',
+                'blob:',
+                'https://js.stripe.com',
+                'https://api.mapbox.com',
+            ],
+            'connect-src': [
+                'self',
+                'unsafe-inline',
+                'data:',
+                'blob:',
+                'https://api.mapbox.com',
+                'https://events.mapbox.com',
+            ],
+        },
+    },
+});
+
 //Set security http headers
-app.use(helmet());
+app.use(helmet({
+
+}));
 
 //Development logging
 if (process.env.NODE_ENV === 'development') {//same process as in serve.js
