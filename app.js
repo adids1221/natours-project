@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const fs = require('fs');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -13,10 +14,19 @@ const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
+//setup pug template engines
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 //1) GLOBAL MIDDLEWARE
+//Serving static files
+//looking for static files - if we dont find any routes that match the app will go to /public and look for static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 //Set security http headers
 app.use(helmet());
 
@@ -55,8 +65,7 @@ app.use(hpp({
     ]
 }));
 
-//Serving static files
-app.use(express.static(`${__dirname}/public`));//looking for static files - if we dont find any routes that match the app will go to /public and look for static files
+
 
 //Test middleware
 app.use((req, res, next) => {//middleware
@@ -66,6 +75,7 @@ app.use((req, res, next) => {//middleware
 });
 
 //3) ROUTES - mount our routers
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);//using the middleware
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);

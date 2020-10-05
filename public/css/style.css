@@ -672,7 +672,7 @@ body {
   fill: #55c57a;
 }
 .reviews__star--inactive {
-  fill: #bbb;
+  fill: rgb(161, 161, 161);
 }
 
 .section-cta {
@@ -830,6 +830,7 @@ body {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  justify-content: flex-end;
 }
 .footer__nav li {
   margin-left: 1.5rem;
@@ -886,6 +887,7 @@ body {
   }
 }
 .nav--user {
+  display: flex;
   -webkit-box-flex: 0;
   -ms-flex: 0 1 40%;
   flex: 0 1 40%;
@@ -912,6 +914,7 @@ body {
   background: none;
   border: none;
   cursor: pointer;
+
   font-family: inherit;
 }
 .nav__el:hover,
@@ -927,6 +930,7 @@ body {
   .nav__el:not(:last-child) {
     margin-right: 0;
     margin-bottom: 1.2rem;
+    font-size: 18px;
   }
 }
 .nav__el:focus {
