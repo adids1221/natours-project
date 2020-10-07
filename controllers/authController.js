@@ -117,6 +117,16 @@ exports.login = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.logout = (req, res) => {
+    res.cookie('jwt', 'loggedout', {
+        expires: new Date(Date.now() + 10000),
+        httpOnly: true
+    });
+    res.status(200).json({
+        status: 'success'
+    });
+}
+
 //protect route from users that are not login
 exports.protect = catchAsync(async (req, res, next) => {
     let token;
@@ -268,26 +278,30 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 });
 
 //Only for rendered pages
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
     if (req.cookies.jwt) {
-        const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+        try {
+            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
 
-        //check if the user still exists
-        const currentUser = await User.findById(decoded.id);
-        if (!currentUser) {
+            //check if the user still exists
+            const currentUser = await User.findById(decoded.id);
+            if (!currentUser) {
+                return next();
+            }
+
+            //if user changed password after the token was issued
+            //iat => JWT time stamp (issued at)
+            if (currentUser.changedPasswordAfter(decoded.iat)) {
+                return next();
+            };
+
+            //There is a loggedin user
+            //refer to user var in pug file
+            res.locals.user = currentUser;
+            return next();
+        } catch (err) {
             return next();
         }
-
-        //if user changed password after the token was issued
-        //iat => JWT time stamp (issued at)
-        if (currentUser.changedPasswordAfter(decoded.iat)) {
-            return next();
-        };
-
-        //There is a loggedin user
-        //refer to user var in pug file
-        res.locals.user = currentUser;
-        return next();
     }
     next();
-});
+};

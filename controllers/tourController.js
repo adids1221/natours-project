@@ -1,6 +1,6 @@
 const AppError = require('../utils/appError');
 const Tour = require('./../models/tourModel');
-const catchAsync = require('./../utils/catchAsync');
+const catchAsync = require('./../utils/catchAsync'); 
 const Factory = require('./handlerFactory');
 
 //calling the Factory methods on the Tour model
