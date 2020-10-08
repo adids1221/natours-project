@@ -281,22 +281,24 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = async (req, res, next) => {
     if (req.cookies.jwt) {
         try {
-            const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+            // 1) verify token
+            const decoded = await promisify(jwt.verify)(
+                req.cookies.jwt,
+                process.env.JWT_SECRET
+            );
 
-            //check if the user still exists
+            // 2) Check if user still exists
             const currentUser = await User.findById(decoded.id);
             if (!currentUser) {
                 return next();
             }
 
-            //if user changed password after the token was issued
-            //iat => JWT time stamp (issued at)
+            // 3) Check if user changed password after the token was issued
             if (currentUser.changedPasswordAfter(decoded.iat)) {
                 return next();
-            };
+            }
 
-            //There is a loggedin user
-            //refer to user var in pug file
+            // THERE IS A LOGGED IN USER
             res.locals.user = currentUser;
             return next();
         } catch (err) {
