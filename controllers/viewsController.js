@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
+const User = require('../models/userModel');
 
 exports.getOverview = catchAsync(async (req, res) => {
     //Get all the tour data from our collection 
@@ -24,7 +25,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
     res.status(200).render('tour', {
         status: 'success',
         title: tour.name,
-        tour 
+        tour
     });
 });
 
@@ -38,6 +39,25 @@ exports.getLogin = (req, res) => {
 exports.getAccount = (req, res) => {
     res.status(200).render('account', {
         status: 'success',
-        title: 'Your Account' 
-    })
-}
+        title: 'Your Account'
+    });
+};
+
+exports.updateUserData = catchAsync(async (req, res, next) => {
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user.id,
+        {
+            name: req.body.name,
+            email: req.body.email
+        },
+        {
+            new: true,
+            runValidators: true
+        }
+    );
+
+    res.status(200).render('account', {
+        title: 'Your account',
+        user: updatedUser
+    });
+});
