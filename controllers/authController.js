@@ -271,7 +271,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     createSendToken(user, res);
     res.status(200).json({
         status: 'success',
-        createdToken,
+        //createdToken,
         data: {
             user
         }
