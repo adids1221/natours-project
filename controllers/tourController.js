@@ -1,7 +1,67 @@
 const AppError = require('../utils/appError');
 const Tour = require('./../models/tourModel');
-const catchAsync = require('./../utils/catchAsync'); 
+const catchAsync = require('./../utils/catchAsync');
 const Factory = require('./handlerFactory');
+const multer = require('multer');
+const sharp = require('sharp');
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    } else {
+        cb(new AppError('Not an image please upload only images', 400), false);
+    }
+};
+const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFilter
+});
+
+//upload.fields for uploadiong few photos
+exports.uploadTourImages = upload.fields([
+    //arr of properties, each property is in the tourModel
+    { name: 'imageCover', maxCount: 1 },
+    { name: 'images', maxCount: 3 }
+]);
+
+/*
+*upload.fields is qual to:*
+upload.single('imageCover')
+upload.array('iamges', 5)
+*/
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+    if (!req.files.imageCover || !req.files.images) return next();
+
+    //using req.body to update the file name because the next middleware (updateOne in handlerFactory) is using req.body for updating the tour
+
+    //Processing the cover image
+    req.body.imageCover = `tours-${req.params.id}-${Date.now()}-cover.jpeg`;
+    await sharp(req.files.imageCover[0].buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${req.body.imageCover}`);
+
+    //Processing the arr of images
+    req.body.images = [];
+    await Promise.all(
+        req.files.images.map(async (file, i) => {
+            const filename = `tours-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+            //the current file buffer
+            await sharp(file.buffer)
+                .resize(2000, 1333)
+                .toFormat('jpeg')
+                .jpeg({ quality: 90 })
+                .toFile(`public/img/tours/${filename}`);
+
+            req.body.images.push(filename);
+        })
+    );
+    next();
+});
 
 //calling the Factory methods on the Tour model
 exports.createTour = Factory.createOne(Tour);

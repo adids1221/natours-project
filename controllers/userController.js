@@ -33,21 +33,21 @@ const upload = multer({
 
 exports.uploadUserPhoto = upload.single('photo');
 
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
     if (!req.file) return next();
 
     req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
     //image resize using sharp
     //using req.file.buffer after multer save the image to the buffer in memory storage
-    sharp(req.file.buffer)
+    await sharp(req.file.buffer)
         .resize(500, 500)
         .toFormat('jpeg')
         .jpeg({ quality: 90 })
         .toFile(`public/img/users/${req.file.filename}`);
 
     next();
-};
+});
 
 //admin can update users data || Do not update passwords with this func
 exports.updateUser = Factory.updateOne(User);
