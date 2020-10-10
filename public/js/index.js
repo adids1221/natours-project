@@ -12,7 +12,6 @@ const accountForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const signupForm = document.querySelector('.form--signup');
 
-
 //Delegation
 if (mapBox) {
     const locations = JSON.parse(mapBox.dataset.locations);
@@ -35,9 +34,13 @@ if (logoutBtn) {
 if (accountForm) {
     accountForm.addEventListener('submit', e => {
         e.preventDefault();
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        updateSettings({ name, email }, 'data');
+        //set multipart form data
+        const form = new FormData();
+        form.append('name', document.getElementById('name').value);
+        form.append('email', document.getElementById('email').value);
+        form.append('photo', document.getElementById('photo').files[0]);
+        console.log(form);
+        updateSettings(form , 'data');
     });
 }
 

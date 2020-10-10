@@ -2,6 +2,52 @@ const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Factory = require('./../controllers/handlerFactory');
+const multer = require('multer');
+const sharp = require('sharp');
+
+//image store on disk
+/* const multerStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/img/users');
+    },
+    filename: (req, file, cb) => {
+        const ext = file.mimetype.split('/')[1];
+        cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+    }
+}); */
+
+//image sotre as a buffer
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+    if (file.mimetype.startsWith('image')) {
+        cb(null, true);
+    } else {
+        cb(new AppError('Not an image please upload only images', 400), false);
+    }
+};
+const upload = multer({
+    storage: multerStorage,
+    fileFilter: multerFilter
+});
+
+exports.uploadUserPhoto = upload.single('photo');
+
+exports.resizeUserPhoto = (req, res, next) => {
+    if (!req.file) return next();
+
+    req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+    //image resize using sharp
+    //using req.file.buffer after multer save the image to the buffer in memory storage
+    sharp(req.file.buffer)
+        .resize(500, 500)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/users/${req.file.filename}`);
+
+    next();
+};
 
 //admin can update users data || Do not update passwords with this func
 exports.updateUser = Factory.updateOne(User);
@@ -29,12 +75,16 @@ exports.getMe = (req, res, next) => {
 //current user update his own data
 exports.updateMe = catchAsync(async (req, res, next) => {
     //create error if user POSTs password data
+    /* console.log(req.file);
+    console.log(req.body); */
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password update. Please use /updateMyPassword', 400));
     }
 
     //filterd out unwanted fields names that are not allowed to be updated
     const filteredBody = filterObj(req.body, 'name', 'email');
+    //updating the photo name after upload a photo 
+    if (req.file) filteredBody.photo = req.file.filename;
 
     //update user document
     const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, { new: true, runValidators: true });
