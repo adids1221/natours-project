@@ -36,6 +36,13 @@ exports.getLogin = (req, res) => {
     });
 };
 
+exports.getSignup = (req, res) => {
+    res.status(200).render('signup', {
+        status: 'success',
+        title: 'Signup'
+    });
+};
+
 exports.getAccount = (req, res) => {
     res.status(200).render('account', {
         status: 'success',
