@@ -2,6 +2,8 @@ const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
 
+//TODO: Fix sendgrid tranporter bugs
+
 module.exports = class Email {
     constructor(user, url) {
         this.to = user.email;
@@ -10,11 +12,18 @@ module.exports = class Email {
         this.from = `Adi Mordo <${process.env.EMAIL_FROM}>`;
     }
 
-    newTransport() {
+    newTransport() { 
         if (process.env.NODE_ENV === 'production') {
-            //transporter Sendgrip to
+            /* //transporter Sendgrip to
+            return nodemailer.createTransport({
+                service: 'SendGrid',
+                auth: {
+                    user: process.env.SENDGRID_USERNAME,
+                    pass: process.env.SENDFRID_PASSWORD
+                }
+            }); */
             return 1
-        }
+        } 
 
         return nodemailer.createTransport({
             host: process.env.EMAIL_HOST,
@@ -23,9 +32,9 @@ module.exports = class Email {
                 user: process.env.EMAIL_USERNAME,
                 pass: process.env.EMAIL_PASSWORD
             }
-        }); 
+        });
     }
- 
+
     // Send the actual email
     async send(template, subject) {
         // 1) Render HTML based on a pug template
