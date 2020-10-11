@@ -4,10 +4,14 @@ import { showAlert } from './alerts';
 import { login } from './login';
 
 export const confirm = async (req, res, next) => {
-    showAlert('success', 'User confirmed and you are logged in!');
-    window.setTimeout(() => {
-        location.assign('/');
-    }, 500);
+    try {
+        const token = await axios(
+            `http://localhost:3000/api/v1/bookings/checkout-session/${token}`
+        );
+        console.log(token);
+    } catch (err) {
+        console.log(err);
+    }
 }
 
 

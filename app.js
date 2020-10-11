@@ -80,8 +80,6 @@ app.use(hpp({
     ]
 }));
 
-
-
 //Test middleware
 app.use((req, res, next) => {//middleware
     req.requestTime = new Date().toISOString();//the time the request was made

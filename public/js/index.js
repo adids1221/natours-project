@@ -3,7 +3,7 @@ import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { signup } from './signup';
-import { bookTour } from './stripe'
+import { bookTour } from './stripe';
 
 //DOM Elements 
 const mapBox = document.getElementById('map');
@@ -13,6 +13,7 @@ const accountForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const signupForm = document.querySelector('.form--signup');
 const bookBtn = document.getElementById('book-tour');
+//const confirmBtn = document.getElementById('token-log');
 
 //Delegation
 if (mapBox) {
@@ -77,6 +78,13 @@ if (bookBtn) {
     bookBtn.addEventListener('click', e => {
         e.target.textContent = 'Processing...'
         const { tourId } = e.target.dataset;
-        bookTour(tourId)
+        bookTour(tourId);
     });
 }
+
+/* if (confirmBtn) {
+    confirmBtn.addEventListener('click', e => {
+        const { token } = e.target.dataset;
+        confirm(token);
+    });
+} */
