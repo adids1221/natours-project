@@ -19,6 +19,9 @@ router
 router
     .patch('/resetPassword/:token', authController.resetPassword);
 
+router
+    .get('/confirm/:token', authController.confirm);
+
 //Authenticate Routes - protect all router after this middleware
 router.use(authController.protect);
 
@@ -38,8 +41,6 @@ router
 router
     .get('/me', userController.getMe, userController.getUser);
 
-router
-    .get('/confirm/:token', authController.confirm);
 
 //Restrict the next routes for admin
 router.use(authController.restrictTo('admin'));

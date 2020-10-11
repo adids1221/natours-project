@@ -4,14 +4,14 @@ const User = require('../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 const signToken = id => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN
     });
 }
- 
+
 const createSendToken = (user, res) => {
     const token = signToken(user._id);
 
@@ -41,22 +41,17 @@ exports.signup = catchAsync(async (req, res, next) => {
         passwordConfirm: req.body.passwordConfirm,
         passwordChangedAt: req.body.passwordChangedAt
     });
-
     const createdToken = createSendToken(newUser, res);
-    //console.log(createdToken);
-
-    //email confirmation
     const confirmURL = `${req.protocol}://${req.get('host')}/api/v1/users/confirm/${createdToken}`;
-
-    const message = `Hey ${newUser.name},\n Welcome to Natours, please confirm your email address for using our services.\n 
-    Confirm: ${confirmURL}`;
+    console.log(confirmURL);
+    new Email(newUser, confirmURL).sendWelcome();
 
     try {
-        await sendEmail({
+        /* await sendEmail({
             email: newUser.email,
             subject: 'Welcome to Natours - Confirm your email to get started.',
             message
-        });
+        }); */
 
         res.status(201).json({
             status: 'success',
@@ -74,12 +69,13 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.confirm = catchAsync(async (req, res, next) => {
-    const decoded = await promisify(jwt.verify)(req.params.token, process.env.JWT_SECRET);
-    await User.findByIdAndUpdate(decoded.id, { confirmed: true });
-    res.status(204).json({
-        status: 'success',
-        message: `Thank you for confirmation, Welcome to Natours`
-    });
+    try {
+        const decoded = await promisify(jwt.verify)(req.params.token, process.env.JWT_SECRET);
+        await User.findByIdAndUpdate(decoded.id, { confirmed: true });
+        res.status(200).render('confirm');
+    } catch (err) {
+        console.error(err);
+    }
 });
 
 
@@ -184,18 +180,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const resetToken = user.createPasswordResetToken();
     //validateBeforeSave for Deactivate the validation in the schema
     await user.save({ validateBeforeSave: false });
-
-    //send it back as an email
-    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-
-    const message = `Forgot Password? Submit your new password and confirm at: ${resetURL}.\n Didnt forgot your password please igonre this email`;
-
     try {
-        await sendEmail({
-            email: user.email, //req.body.email
-            subject: 'Your password reset token valid for 10 min.',
-            message
-        });
+        const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
+        await new Email(user, resetURL).sendResetPassword();
 
         res.status(200).json({
             status: 'success',
