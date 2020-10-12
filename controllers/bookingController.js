@@ -9,6 +9,11 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     //Get the currently booked tour
     const tour = await Tour.findById(req.params.tourId);
 
+    /* if(tour.price > 1000){
+        //re authentication
+
+    } */
+
     //Create check-out session
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -44,3 +49,10 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
     await Booking.create({ tour, user, price });
     res.redirect(req.originalUrl.split('?')[0]);
 });
+
+
+exports.getBooking = Factory.getOne(Booking);
+exports.getAllBookings = Factory.getAll(Booking);
+exports.createBooking = Factory.createOne(Booking);
+exports.updateBooking = Factory.updateOne(Booking);
+exports.deleteBooking = Factory.deleteOne(Booking);

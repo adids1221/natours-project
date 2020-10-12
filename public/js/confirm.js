@@ -5,9 +5,7 @@ import { login } from './login';
 
 export const confirm = async (req, res, next) => {
     try {
-        const token = await axios(
-            `http://localhost:3000/api/v1/bookings/checkout-session/${token}`
-        );
+        const token = req.originalUrl.split('confirm/')[1];
         console.log(token);
     } catch (err) {
         console.log(err);
