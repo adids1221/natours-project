@@ -73,7 +73,20 @@ const tourSchema = new mongoose.Schema({
         default: Date.now(),
         select: false
     },
-    startDates: [Date], //array of dates
+    startDates: [{
+        date: {
+            type: Date,
+            required: [true, 'A tour must have a start date']
+        },
+        participants: {
+            type: Number,
+            default: 0
+        },
+        soldOut: {
+            type: Boolean,
+            default: false
+        }
+    }], //array of dates
     secretTour: {
         type: Boolean,
         default: false
@@ -176,6 +189,8 @@ tourSchema.post(/^find/, function (docs, next) {
     console.log(`Query took: ${Date.now() - this.start} ms`);
     next();
 });
+
+
 
 //-Aggregation middleware
 tourSchema.pre('aggregate', function (next) {

@@ -8728,7 +8728,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 var bookTour = /*#__PURE__*/function () {
-  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tourId) {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(tourId, startDateId) {
     var stripe, session;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
@@ -8738,7 +8738,7 @@ var bookTour = /*#__PURE__*/function () {
             stripe = Stripe('pk_test_51Hb5QgEQE2aP1WNPHH2UpTVQt8MPqAtudsZ61dCJPLemilXhCkK6yVerbeleuH91HSLXAlouBW2aSSeqfRMBYWj200CrwALw0L'); //Get checkout session from the server
 
             _context.next = 4;
-            return (0, _axios.default)("http://localhost:3000/api/v1/bookings/checkout-session/".concat(tourId));
+            return (0, _axios.default)("http://localhost:3000/api/v1/bookings/checkout-session/".concat(tourId, "/").concat(startDateId));
 
           case 4:
             session = _context.sent;
@@ -8767,7 +8767,7 @@ var bookTour = /*#__PURE__*/function () {
     }, _callee, null, [[0, 10]]);
   }));
 
-  return function bookTour(_x) {
+  return function bookTour(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -9053,7 +9053,8 @@ var logoutBtn = document.querySelector('.nav__el--logout');
 var accountForm = document.querySelector('.form-user-data');
 var userPasswordForm = document.querySelector('.form-user-password');
 var signupForm = document.querySelector('.form--signup');
-var bookBtn = document.getElementById('book-tour'); //const confirmBtn = document.getElementById('token-log');
+var bookBtn = document.getElementById('book-tour');
+var selectStartDate = document.querySelector('.selectStartDate'); //const confirmBtn = document.getElementById('token-log');
 //Delegation
 
 if (mapBox) {
@@ -9164,7 +9165,9 @@ if (bookBtn) {
   bookBtn.addEventListener('click', function (e) {
     e.target.textContent = 'Processing...';
     var tourId = e.target.dataset.tourId;
-    (0, _stripe.bookTour)(tourId);
+    var startDateId = selectStartDate.options[selectStartDate.selectedIndex].value;
+    console.log("startDateId: ".concat(startDateId, "   ||   tourID: ").concat(tourId));
+    (0, _stripe.bookTour)(tourId, startDateId);
   });
 }
 /* if (confirmBtn) {
@@ -9201,7 +9204,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50072" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51648" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

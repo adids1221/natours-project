@@ -8,7 +8,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     //Get the currently booked tour
     const tour = await Tour.findById(req.params.tourId);
-
+    const startDateId = req.params.startDateId;
     /* if(tour.price > 1000){
         //re authentication
 
@@ -17,7 +17,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
     //Create check-out session
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
-        success_url: `${req.protocol}://${req.get('host')}/?tour=${req.params.tourId}&user=${req.user.id}&price=${tour.price}`,
+        success_url: `${req.protocol}://${req.get('host')}/?tour=${req.params.tourId}&user=${req.user.id}&price=${tour.price}&startDateId=${startDateId}`,
         cancel_url: `${req.protocol}://${req.get('host')}/tour/${tour.slug}`,
         customer_email: req.user.email,
         client_reference_id: req.params.tourId,
@@ -42,11 +42,11 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
 
 exports.createBookingCheckout = catchAsync(async (req, res, next) => {
     //This is temporary, unsecure route
-    const { tour, user, price } = req.query;
+    const { tour, user, price , startDateId } = req.query;
     if (!tour && !user && !price) {
         return next();
     }
-    await Booking.create({ tour, user, price });
+    await Booking.create({ tour, user, price, date: startDateId });
     res.redirect(req.originalUrl.split('?')[0]);
 });
 

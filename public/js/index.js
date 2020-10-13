@@ -13,6 +13,7 @@ const accountForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const signupForm = document.querySelector('.form--signup');
 const bookBtn = document.getElementById('book-tour');
+const selectStartDate = document.querySelector('.selectStartDate');
 //const confirmBtn = document.getElementById('token-log');
 
 //Delegation
@@ -78,7 +79,9 @@ if (bookBtn) {
     bookBtn.addEventListener('click', e => {
         e.target.textContent = 'Processing...'
         const { tourId } = e.target.dataset;
-        bookTour(tourId);
+        const startDateId = selectStartDate.options[selectStartDate.selectedIndex].value;
+        console.log(`startDateId: ${startDateId}   ||   tourID: ${tourId}`);
+        bookTour(tourId, startDateId);
     });
 }
 
