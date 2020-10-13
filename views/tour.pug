@@ -85,10 +85,13 @@ block content
                 h2.heading-secondary What are you waiting for?
                 p.cta__text= `${tour.duration} days. 1 adventure. Infinite memories. Make it yours today!`
                 - if(user)
-                    button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
-                    select.selectStartDate
-                        each tourDate in tour.startDates
-                            - if (tour.maxGroupSize > tourDate.participants)
-                                option(value=`${tourDate._id}`)= `${tourDate.date.toLocaleString('en-us', {day: 'numeric', month: 'long', year: 'numeric'})}`
+                    - if(isBooked.length > 0)
+                        button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`, disabled) You Already Booked!
+                    - else
+                        button.btn.btn--green.span-all-rows#book-tour(data-tour-id=`${tour.id}`) Book tour now!
+                        select.selectStartDate
+                            each tourDate in tour.startDates
+                                - if (tour.maxGroupSize > tourDate.participants)
+                                    option(value=`${tourDate._id}`)= `${tourDate.date.toLocaleString('en-us', {day: 'numeric', month: 'long', year: 'numeric'})}`
                 - else
                     a.btn.btn--green.span-all-rows(href='/login') Log in to book tour

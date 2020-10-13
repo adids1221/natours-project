@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const Bookings = require('./bookingModel');
 
 //TODO: implement two-factor authentication
 //TODO: require re-authentication before high value action
