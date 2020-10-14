@@ -4,6 +4,7 @@ import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { signup } from './signup';
 import { bookTour } from './stripe';
+import { createReview } from './review';
 
 //DOM Elements 
 const mapBox = document.getElementById('map');
@@ -14,6 +15,9 @@ const userPasswordForm = document.querySelector('.form-user-password');
 const signupForm = document.querySelector('.form--signup');
 const bookBtn = document.getElementById('book-tour');
 const selectStartDate = document.querySelector('.selectStartDate');
+const reviewBtn = document.querySelector('.btn--review');
+const reviewSave = document.querySelector('.review-save');
+const closeReview = document.querySelector('.close');
 //const confirmBtn = document.getElementById('token-log');
 
 //Delegation
@@ -82,6 +86,27 @@ if (bookBtn) {
         const startDateId = selectStartDate.options[selectStartDate.selectedIndex].value;
         console.log(`startDateId: ${startDateId}   ||   tourID: ${tourId}`);
         bookTour(tourId, startDateId);
+    });
+}
+
+if (reviewBtn) {
+    reviewBtn.addEventListener('click', () => {
+        document.querySelector('.bg-modal').style.display = "flex";
+    });
+}
+
+if (closeReview) {
+    closeReview.addEventListener("click", () => {
+        document.querySelector('.bg-modal').style.display = "none";
+    });
+}
+
+if (reviewSave) {
+    reviewSave.addEventListener("click", async e => {
+        const review = document.getElementById('review').value;
+        const rating = document.getElementById('ratings').value;
+        const { tourId } = e.target.dataset;
+        await createReview(tourId, review, rating);
     });
 }
 

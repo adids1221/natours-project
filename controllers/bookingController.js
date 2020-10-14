@@ -6,6 +6,11 @@ const Factory = require('./handlerFactory');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
+    //Prevent duplicate bookings
+    const isBooked = await Booking.find({ user: req.user.id , tour: req.params.tourId });
+    if(isBooked.length>0){
+        return next(new AppError('You already booked the tour', 405));
+    }
     //Get the currently booked tour
     const tour = await Tour.findById(req.params.tourId);
     const startDateId = req.params.startDateId;

@@ -238,6 +238,14 @@ body {
   background-color: #55c57a;
 }
 
+.btn--review {
+  background-color:#67c273;
+  color: rgb(255, 255, 255);
+}
+.btn--review::after {
+  background-color:#67c273;
+}
+
 .btn--small {
   padding: 1.25rem 3rem !important;
   font-size: 1.4rem !important;
@@ -1356,27 +1364,45 @@ body {
   transform: translateY(-2px);
 }
 
-.dropdown-menu,
-.dropdown-menu:link,
-.dropdown-menu:visited {
-  font-size: 1.6rem;
-  padding: 1.4rem 3rem;
-  border-radius: 10rem;
-  text-transform: uppercase;
-  display: inline-block;
-  text-decoration: none;
-  position: relative;
-  -webkit-transition: all 0.4s;
-  transition: all 0.4s;
-  font-weight: 400;
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  /*Add later when we use this for the button in form*/
-  border: none;
-  cursor: pointer;
+/*popup review form*/
+.bg-modal {
+	background-color: rgba(0, 0, 0, 0.8);
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	display: none;
+	justify-content: center;
+	align-items: center;
 }
 
-.dropdown--green {
-  background-color: #55c57a;
-  color: #fff;
+.modal-contents {
+	height: 320px;
+	width: 500px;
+	background-color: white;
+	text-align: center;
+	padding: 20px;
+	position: relative;
+	border-radius: 4px;
+}
+
+input {
+	margin: 15px auto;
+	display: block;
+	width: 50%;
+	padding: 8px;
+	border: 1px solid gray;
+}
+
+.close {
+	position: absolute;
+	top: 0;
+	right: 10px;
+	font-size: 42px;
+	color: #333;
+	transform: rotate(45deg);
+	cursor: pointer;
+	&:hover {
+		color: #666;
+	}
 }

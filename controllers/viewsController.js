@@ -20,7 +20,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
     });
 
     const isBooked = await Booking.find({ user: req.user.id, tour: tour.id });
-    console.log(isBooked);
+    const tourDate = isBooked.date;
 
     if (!tour) {
         return next(new AppError('There is no tour with that name.', 404));
@@ -30,6 +30,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
         status: 'success',
         title: tour.name,
         isBooked,
+        tourDate,
         tour
     });
 });
