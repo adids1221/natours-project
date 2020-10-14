@@ -1,8 +1,10 @@
 const express = require('express');
 const userController = require('./../controllers/userController');
 const authController = require('./../controllers/authController');
-
+const bookingRouter = require('./../routes/bookingRoutes');
 const router = express.Router();
+
+router.use('/:userId/bookings', bookingRouter);
 
 router
     .post('/login', authController.login);
@@ -40,7 +42,6 @@ router
 
 router
     .get('/me', userController.getMe, userController.getUser);
-
 
 //Restrict the next routes for admin
 router.use(authController.restrictTo('admin'));

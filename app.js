@@ -7,7 +7,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -16,6 +17,7 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
+const bookingRouter = require('./routes/bookingRoutes');
 
 const app = express();
 
@@ -79,8 +81,6 @@ app.use(hpp({
     ]
 }));
 
-
-
 //Test middleware
 app.use((req, res, next) => {//middleware
     req.requestTime = new Date().toISOString();//the time the request was made
@@ -88,11 +88,15 @@ app.use((req, res, next) => {//middleware
     next();
 });
 
+app.use(compression());
+
 //3) ROUTES - mount our routers
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);//using the middleware
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 //Unhandeld routes
 app.all('*', (req, res, next) => {

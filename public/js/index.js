@@ -3,6 +3,8 @@ import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { signup } from './signup';
+import { bookTour } from './stripe';
+import { createReview } from './review';
 
 //DOM Elements 
 const mapBox = document.getElementById('map');
@@ -11,6 +13,12 @@ const logoutBtn = document.querySelector('.nav__el--logout');
 const accountForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const signupForm = document.querySelector('.form--signup');
+const bookBtn = document.getElementById('book-tour');
+const selectStartDate = document.querySelector('.selectStartDate');
+const reviewBtn = document.querySelector('.btn--review');
+const reviewSave = document.querySelector('.review-save');
+const closeReview = document.querySelector('.close');
+//const confirmBtn = document.getElementById('token-log');
 
 //Delegation
 if (mapBox) {
@@ -39,7 +47,6 @@ if (accountForm) {
         form.append('name', document.getElementById('name').value);
         form.append('email', document.getElementById('email').value);
         form.append('photo', document.getElementById('photo').files[0]);
-        console.log(form);
         updateSettings(form, 'data');
     });
 }
@@ -70,3 +77,40 @@ if (signupForm) {
         await signup(name, email, password, passwordConfirm);
     });
 };
+
+if (bookBtn) {
+    bookBtn.addEventListener('click', e => {
+        e.target.textContent = 'Processing...'
+        const { tourId } = e.target.dataset;
+        const startDateId = selectStartDate.options[selectStartDate.selectedIndex].value;
+        bookTour(tourId, startDateId);
+    });
+}
+
+if (reviewBtn) {
+    reviewBtn.addEventListener('click', () => {
+        document.querySelector('.bg-modal').style.display = "flex";
+    });
+}
+
+if (closeReview) {
+    closeReview.addEventListener("click", () => {
+        document.querySelector('.bg-modal').style.display = "none";
+    });
+}
+
+if (reviewSave) {
+    reviewSave.addEventListener("click", async e => {
+        const review = document.getElementById('review').value;
+        const rating = document.getElementById('ratings').value;
+        const { tourId } = e.target.dataset;
+        await createReview(tourId, review, rating);
+    });
+}
+
+/* if (confirmBtn) {
+    confirmBtn.addEventListener('click', e => {
+        const { token } = e.target.dataset;
+        confirm(token);
+    });
+} */

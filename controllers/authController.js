@@ -41,18 +41,15 @@ exports.signup = catchAsync(async (req, res, next) => {
         passwordConfirm: req.body.passwordConfirm,
         passwordChangedAt: req.body.passwordChangedAt
     });
+
     const createdToken = createSendToken(newUser, res);
+    //console.log(createdToken);
+
+    //email confirmation
     const confirmURL = `${req.protocol}://${req.get('host')}/api/v1/users/confirm/${createdToken}`;
-    console.log(confirmURL);
-    new Email(newUser, confirmURL).sendWelcome();
+    await new Email(newUser, confirmURL).sendWelcome();
 
     try {
-        /* await sendEmail({
-            email: newUser.email,
-            subject: 'Welcome to Natours - Confirm your email to get started.',
-            message
-        }); */
-
         res.status(201).json({
             status: 'success',
             data: {
@@ -69,13 +66,13 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.confirm = catchAsync(async (req, res, next) => {
-    try {
-        const decoded = await promisify(jwt.verify)(req.params.token, process.env.JWT_SECRET);
-        await User.findByIdAndUpdate(decoded.id, { confirmed: true });
-        res.status(200).render('confirm');
-    } catch (err) {
-        console.error(err);
-    }
+    const decoded = await promisify(jwt.verify)(req.params.token, process.env.JWT_SECRET);
+    await User.findByIdAndUpdate(decoded.id, { confirmed: true });
+    res.status(200).render('confirm');
+    /* res.status(204).json({
+        status: 'success',
+        message: `Thank you for confirmation, Welcome to Natours`
+    }) */;
 });
 
 
@@ -180,9 +177,15 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     const resetToken = user.createPasswordResetToken();
     //validateBeforeSave for Deactivate the validation in the schema
     await user.save({ validateBeforeSave: false });
+
     try {
         const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-        await new Email(user, resetURL).sendResetPassword();
+        await new Email(user, resetURL).sendResetPassword(); 
+        /* await sendEmail({
+            email: user.email, //req.body.email
+            subject: 'Your password reset token valid for 10 min.',
+            message
+        }); */
 
         res.status(200).json({
             status: 'success',
@@ -286,6 +289,7 @@ exports.isLoggedIn = async (req, res, next) => {
             }
 
             // THERE IS A LOGGED IN USER
+            req.user = currentUser
             res.locals.user = currentUser;
             return next();
         } catch (err) {

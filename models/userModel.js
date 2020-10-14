@@ -2,10 +2,10 @@ const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const Bookings = require('./bookingModel');
 
 //TODO: implement two-factor authentication
 //TODO: require re-authentication before high value action
-//TODO: confirm user email after sign-up using Mailstrap
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -99,7 +99,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
     if (this.passwordChangedAt) {
         //if the password changed for this user is
         const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
-        console.log(changedTimeStamp, JWTTimeStamp);
+        //console.log(changedTimeStamp, JWTTimeStamp);
         //The time that the token was issued is less then changed time stamp
         return JWTTimeStamp < changedTimeStamp;
     }
@@ -117,7 +117,7 @@ userSchema.methods.createPasswordResetToken = function () {
         .update(resetToken)
         .digest('hex');
 
-    console.log({ resetToken }, this.passwordResetToken);
+    //console.log({ resetToken }, this.passwordResetToken);
 
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 

@@ -23,7 +23,11 @@ block content
                         .card__data
                             svg.card__icon
                                 use(xlink:href='/img/icons.svg#icon-calendar')
+<<<<<<< HEAD
                             span=tour.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'})
+=======
+                            span= tour.startDates[0].date.toLocaleString('en-us', {month: 'long', year: 'numeric'})
+>>>>>>> 8b00c9bda102ff126a009c5e66599c83935f6e4e
                         .card__data
                             svg.card__icon
                                 use(xlink:href='/img/icons.svg#icon-flag')

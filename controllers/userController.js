@@ -31,7 +31,7 @@ const upload = multer({
     fileFilter: multerFilter
 });
 
-exports.uploadUserPhoto = upload.single('photo');
+exports.uploadUserPhoto = upload.single('photo'); 
 
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
     if (!req.file) return next();
@@ -75,8 +75,6 @@ exports.getMe = (req, res, next) => {
 //current user update his own data
 exports.updateMe = catchAsync(async (req, res, next) => {
     //create error if user POSTs password data
-    /* console.log(req.file);
-    console.log(req.body); */
     if (req.body.password || req.body.passwordConfirm) {
         return next(new AppError('This route is not for password update. Please use /updateMyPassword', 400));
     }

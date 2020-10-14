@@ -4,5 +4,7 @@ block content
     main.main
         .confirm
             .confirm-title
-                h2.heading-secondary.heading-secondary--error Welcome To Natours
+                h2.heading-secondary.heading-secondary--error Welcome To Natours 
                 h2 Your user is now confirmed, you can safely login!
+                //-button.btn.btn--green.span-all-rows#token-log(data-token=`${token}`) Press Here To Let The Journey Begin...
+                a.btn.btn--green.span-all-rows(href='/login') Press Here To Let The Journey Begin...
