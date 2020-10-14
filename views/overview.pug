@@ -23,15 +23,15 @@ block content
                         .card__data
                             svg.card__icon
                                 use(xlink:href='/img/icons.svg#icon-calendar')
-                            span= tour.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'})
+                            span=tour.startDates[0].toLocaleString('en-us', {month: 'long', year: 'numeric'})
                         .card__data
                             svg.card__icon
                                 use(xlink:href='/img/icons.svg#icon-flag')
-                            span= `${tour.locations.length} stops`
+                            span=`${tour.locations.length} stops`
                         .card__data
                             svg.card__icon
                                 use(xlink:href='/img/icons.svg#icon-user')
-                            span= `${tour.maxGroupSize} people` 
+                            span=`${tour.maxGroupSize} people` 
 
                     .card__footer
                         p
