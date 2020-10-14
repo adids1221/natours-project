@@ -99,7 +99,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimeStamp) {
     if (this.passwordChangedAt) {
         //if the password changed for this user is
         const changedTimeStamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
-        console.log(changedTimeStamp, JWTTimeStamp);
+        //console.log(changedTimeStamp, JWTTimeStamp);
         //The time that the token was issued is less then changed time stamp
         return JWTTimeStamp < changedTimeStamp;
     }
@@ -117,7 +117,7 @@ userSchema.methods.createPasswordResetToken = function () {
         .update(resetToken)
         .digest('hex');
 
-    console.log({ resetToken }, this.passwordResetToken);
+    //console.log({ resetToken }, this.passwordResetToken);
 
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 

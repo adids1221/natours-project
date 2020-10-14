@@ -7,7 +7,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -86,6 +87,8 @@ app.use((req, res, next) => {//middleware
     //console.log(req.cookies);
     next();
 });
+
+app.use(compression());
 
 //3) ROUTES - mount our routers
 app.use('/', viewRouter);

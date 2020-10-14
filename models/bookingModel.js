@@ -48,7 +48,6 @@ bookingSchema.pre('save', async function (next) {
     const tour = await Tour.findById(this.tour);
     const startDate = tour.startDates.id(this.date);
     // using tour.startDates.id(this.date) for the specific date
-    //console.log(`startDate: ${startDate}`);
     if (startDate.participants > tour.maxGroupSize) {
         next(new AppError('This tour at this date is full, try another date', 403));
     }

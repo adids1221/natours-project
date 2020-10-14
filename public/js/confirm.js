@@ -6,7 +6,6 @@ import { login } from './login';
 export const confirm = async (req, res, next) => {
     try {
         const token = req.originalUrl.split('confirm/')[1];
-        console.log(token);
     } catch (err) {
         console.log(err);
     }
