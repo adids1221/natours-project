@@ -23,8 +23,8 @@ exports.getTour = catchAsync(async (req, res, next) => {
         const isBooked = await Booking.find({ user: req.user.id, tour: tour.id });
         const tourDate = isBooked.date;
     } else {
-        isBooked = 0;
-        tourDate = Date.now();
+        const isBooked = 0;
+        const tourDate = Date.now();
     }
 
     if (!tour) {

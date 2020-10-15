@@ -72,7 +72,7 @@ block content
 
     section.section-reviews
         - if(user)
-            - if(isBooked.length > 0) //- && tourDate < Date.now()
+            - if(isBooked.length > 1) //- && tourDate < Date.now()
                 button.btn.btn--review.span-all-rows#review-tour(onclick="openForm()") Review tour now!
                 .bg-modal
                     .modal-contents
