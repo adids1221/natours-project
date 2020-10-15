@@ -19,13 +19,8 @@ exports.getTour = catchAsync(async (req, res, next) => {
         fields: 'review rating user'
     });
 
-    if (req.user) {
-        const isBooked = await Booking.find({ user: req.user.id, tour: tour.id });
-        const tourDate = isBooked.date;
-    } /* else {
-        const isBooked = 0;
-        const tourDate = Date.now();
-    } */
+    const isBooked = await Booking.find({ user: req.user.id, tour: tour.id });
+    const tourDate = isBooked.date;
 
     if (!tour) {
         return next(new AppError('There is no tour with that name.', 404));
