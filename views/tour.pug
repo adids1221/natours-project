@@ -71,7 +71,7 @@ block content
         #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
-        - if(isBooked.length > 0) //- && tourDate < Date.now()
+        - if(isBooked && isBooked.length > 0) //- && tourDate < Date.now()
             button.btn.btn--review.span-all-rows#review-tour(onclick="openForm()") Review tour now!
             .bg-modal
                 .modal-contents

@@ -14,25 +14,34 @@ exports.getOverview = catchAsync(async (req, res) => {
 });
 
 exports.getTour = catchAsync(async (req, res, next) => {
+
     const tour = await Tour.findOne({ slug: req.params.slug }).populate({
         path: 'reviews',
         fields: 'review rating user'
     });
 
-    const isBooked = await Booking.find({ user: req.user.id, tour: tour.id });
-    const tourDate = isBooked.date;
-
     if (!tour) {
         return next(new AppError('There is no tour with that name.', 404));
     }
 
-    res.status(200).render('tour', {
-        status: 'success',
-        title: tour.name,
-        isBooked,
-        tourDate,
-        tour
-    });
+    if (req.user) {
+        const isBooked = await Booking.find({ user: req.user.id, tour: tour.id });
+        const tourDate = isBooked.date;
+
+        res.status(200).render('tour', {
+            status: 'success',
+            title: tour.name,
+            isBooked,
+            tourDate,
+            tour
+        });
+    } else {
+        res.status(200).render('tour', {
+            status: 'success',
+            title: tour.name,
+            tour
+        });
+    }
 });
 
 exports.getLogin = (req, res) => {
